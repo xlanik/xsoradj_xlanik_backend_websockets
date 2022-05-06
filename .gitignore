@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
-.env
->>>>>>> 739fb1072b21ef0ec56134fa880fe5ce3e7ede1d
+node_modules
 node_modules/.package-lock.json
 node_modules/.bin/is-ci
 node_modules/.bin/is-ci.cmd
