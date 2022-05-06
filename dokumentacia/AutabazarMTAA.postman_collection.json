@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "3dec2168-ed66-4a57-a0f9-eb78b6b25de2",
+		"name": "AutabazarMTAA",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST requesty",
+			"item": [
+				{
+					"name": "Pridanie technika",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Majo Petrik\",\r\n    \"password\": \"vymenimkolesozahever\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/Technicians",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Technicians"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registracia zakaznika",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Jano Kolenik\",\r\n    \"phoneNumber\": \"0944255355\",\r\n    \"email\": \"fesiboy@aaa.com\",\r\n    \"password\": \"silnyheslosilnychlap\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/Customers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pridanie auta",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image_url",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "data",
+									"value": "{\n    \"customer_id\": \"623b71c980a80392bbcc5a0e\",\n    \"technician_id\": \"62370f8fd4a6249c37b18f08\",\n    \"brand\": \"Skoda\",\n    \"model\": \"Felicia\",\n    \"year\": 2000,\n    \"oilChange\": false,\n    \"filterChange\": true,\n    \"tireChange\": false,\n    \"engineService\": false,\n    \"state\": \"neopravene\",\n    \"description\": \"felda ripi\",\n    \"number_plate\": \"TT768IP\"\n}",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/Cars",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Cars"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pridanie opraveneho auta",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customer_id\": \"62365120a485c92f66226664\",\r\n    \"technician_id\": \"62364a543a538f2e11be1f07\",\r\n    \"brand\": \"Audi\",\r\n    \"model\": \"Na\",\r\n    \"year\": 2008,\r\n    \"oilChange\": false,\r\n    \"filterChange\": false,\r\n    \"tireChange\": false,\r\n    \"engineService\": false,\r\n    \"state\": \"opravene\",\r\n    \"description\": \"hotofka borec\",\r\n    \"image_url\": \"base64 tu bude\",\r\n    \"number_plate\": \"KKOKCEM\",\r\n    \"last_service\": \"2017-04-07\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/RepairedCars",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RepairedCars"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Prihlasenie",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Jano Kolenik\",\r\n    \"password\": \"silnyheslosilnychlap\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PATCH requesty",
+			"item": [
+				{
+					"name": "Uprav auto",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"_id\": \"6236656ffe4dec85f49b3321\",\r\n        \"customer_id\": \"62365120a485c92f66226664\",\r\n        \"technician_id\": \"62364a543a538f2e11be1f07\",\r\n        \"brand\": \"Skoda\",\r\n        \"model\": \"Octavia\",\r\n        \"year\": 2017,\r\n        \"oilChange\": true,\r\n        \"filterChange\": true,\r\n        \"tireChange\": false,\r\n        \"engineService\": false,\r\n        \"state\": \"opravene\",\r\n        \"description\": \"Hotovka chlopi\",\r\n        \"image_url\": \"tam a tam\",\r\n        \"number_plate\": \"TT673IR\",\r\n        \"__v\": 0\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/Cars/624365d03449831372a0a6a7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Cars",
+								"624365d03449831372a0a6a7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DELETE requesty",
+			"item": [
+				{
+					"name": "Vymaz auto",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/Customers/623650f8a485c92f66226662",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Customers",
+								"623650f8a485c92f66226662"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET requesty",
+			"item": [
+				{
+					"name": "Vsetky auta",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Vsetky opravene auta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/RepairedCars",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"RepairedCars"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vsetci zakaznici",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Vsetci technici",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/Technicians",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Technicians"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Technik ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/Technicians",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Technicians"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Auto ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/Technicians",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Technicians"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Zakaznik ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/Customers/623b71c980a80392bbcc5a0e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"Customers",
+								"623b71c980a80392bbcc5a0e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Technikove auta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/TechnicianCars/62364a543a538f2e11be1f07",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"TechnicianCars",
+								"62364a543a538f2e11be1f07"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Zakaznikove auto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/CustomerCar/623b71c980a80392bbcc5a0e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"CustomerCar",
+								"623b71c980a80392bbcc5a0e"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

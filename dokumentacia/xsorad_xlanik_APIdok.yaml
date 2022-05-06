@@ -1,0 +1,685 @@
+openapi: 3.0.0
+info:
+  title: Autoservis - MTAA - xsoradj - xlanik
+  description: API dokumentácia k projektu. API dokumentacia vychádza zo šturktúry https://swagger.io/docs/specification/basic-structure/
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      description: Volanie login je volané vždy pri prihlasovaní používateľa do aplikácie. Prehľadáva sa aj databáza s používateľmi a taktiež s technikmi
+      tags:
+        - Prihlásenie používateľa
+      summary: Skontroluje zadané používateľské údaje
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomersLogin'
+      responses:
+        '200':
+          description: Detail prihláseného používateľa
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Customers'
+        '400':
+          description: Zlé prihlasovacie údaje
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadDetails'
+  /customers:
+    get:
+      description: Bude volaný vtedy, keď budeme potrebovať získať zoznam používateľov kvôli prihláseniu.
+      tags:
+        - Zoznam používateľov
+      summary: Vráti zoznam všetkých používateľov.
+      responses:
+        '200':
+          description: Pole všetkých používateľov
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  array:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customers'
+    post:
+      description: Toto volanie sa bude vykonávať vždy pri registrovaní používateľa a teda pri jeho pridávaní do databázy.
+      tags:
+        - Vkladanie používateľa do DB
+      summary: Vytvorí nový záznam používateľa v databáze
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customers'
+      responses:
+        '201':
+          description: Detail vytvoreného používateľa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customers201'
+        '400':
+          description: Detaily validačnej chyby
+  /customers/{id}:
+    get:
+      description: Toto volanie bude používané, keď budeme zisťovať informácie o používateľovi po jeho prihlásení do aplikácie.
+      tags:
+        - Zobrazenie informácii o používateľovi
+      summary: Vráti informácie o používateľovi
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: unikátny identifikátor používateľa
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Detail vyhľadávaného používateľa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomersID200'
+        '400':
+          description: Používateľ neexistuje
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomersID404'
+  /cars:
+    get:
+      description: Toto volanie sa vykoná vtedy, keď budeme potrebovať získať všetky opravované vozidla pre technika, aby ich mohol prezerať v aplikácii. 
+      tags:
+        - Zoznam vozidiel
+      summary: Vráti zoznam všetkých vozidiel
+      responses:
+        '200':
+          description: Pole všetkých vozidiel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  array:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cars'
+    post:
+      description: Vykonáva sa ak používateľ registruje svoje auto do servisu, čím sa pridá do databázy nové vozidlo.
+      tags:
+        - Vloženie auta do DB
+      summary: Vytvorí nový záznam používateľa v databáze
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarsPost'
+      responses:
+        '201':
+          description: Detail vytvoreného vozidla
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cars201'
+        '400':
+          description: Detaily validačnej chyby
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cars422'
+  /repairedCars:
+    get:
+      description: Toto volanie sa vykonáva vždy, keď si bude technik prezerať všetky vozidlá, ktoré sa už v minulosti servisovali v autoservise.
+      tags:
+        - Zoznam opravených vozidiel
+      summary: Vráti zoznam všetkých vozidiel
+      responses:
+        '200':
+          description: Pole všetkých vozidiel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  array:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Cars'
+    post:
+      description: Ak si používateľ zvolí možnosť vyzdvihnutia automobilu, pridá sa do tejto databázy.
+      tags:
+        - Vloženie auta do histórie DB
+      summary: Vytvorí nový záznam používateľa v databáze
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarsPost'
+      responses:
+        '201':
+          description: Detail vytvoreného používateľa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepairedCars201'
+        '400':
+          description: Detaily validačnej chyby
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepairedCars422'
+  /cars/{id}:
+    get:
+      description: Toto volanie využívame na získanie informácií o aute, na ktorom sa práve vykonáva servis.
+      tags:
+        - Zobrazenie informácií o vozidle
+      summary: Vráti údaje o vozidle
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: unikátny identifikátor vozidla
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Informácie o vozidle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cars'
+        '404':
+          description: Vozidlo neexistuje
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarsID404'
+    delete:
+      description: Volanie DELETE používame keď si používateľ vyzdvihne svoje auto. Následne sa vždy vymazané vozidlo pridáva do databázy RepairedCars.
+      tags:
+        - Odstránenie vozidla z DB
+      summary: Odstráni vozidlo z DB
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Identifikátor Vozidla
+      responses:
+        '200':
+          description: Vozidlo bolo zmazané
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarsDELETE200'
+        '404':
+          description: Vozidlo so zadaným ID sa nenachádza v databáze
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarsID404'
+    put:
+      description: Používa sa na zmenu stavu opravy vozidla. 
+      tags:
+        - Úprava stavu vozidla
+      summary: Upraví údaje o Vozidle
+      parameters:
+        - name: id
+          schema:
+              type: integer
+          required: true
+          in: path
+          description: unikátny identifikátor vozidla
+      responses:
+        '200':
+          description: Upravený atribút
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cars'
+                
+        '404':
+          description: Vozidlo neexistuje
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarsID404'
+  /TechnicianCars/{id}:
+    get:
+      description: Toto volanie využívame na získanie všetkých áut, na ktorých pracuje daný technik.
+      tags:
+        - Zobrazenie technikových vozidiel
+      summary: Vráti všetky vozidlá na ktorých pracuje konkrétny technik
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: unikátny identifikátor technika
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Informácie o vozidlách
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cars'
+        '404':
+          description: Technik nemá pridelené žiadne vozidlá na servis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Technicians404'
+  /CustomerCar/{id}:
+    get:
+      description: Toto volanie využívame na získanie auta, ktoré vlastní konkrétny zákazník.
+      tags:
+        - Zobrazenie informácií o zákazníkovom vozidle
+      summary: Vráti údaje o vozidle podľa prislúchajúceho zákazníka
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: unikátny identifikátor vozidla
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Informácie o vozidle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cars'
+        '404':
+          description: Zákazník nemá žiadne auto v servise.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomersID404'
+  /technicians:
+    description: Toto volanie používame pri prihlasovaní technika, a taktiež pri získavaní všetkých technikov pri voľbe konkrétneho technika zákazníkom. 
+    get:
+      tags:
+        - Zoznam technikov
+      summary: Vráti zoznam všetkých technikov
+      responses:
+        '200':
+          description: Pole všetkých technikov
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  array:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Technicians'
+  /technicians/{id}:
+    description: Používame pri získavaní informácii o konkrétnom technikovi a ním opravovanými vozidlami.
+    get:
+      tags:
+        - Zobrazenie informácii o technikovi
+      summary: Vráti údaje o technikovi
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: unikátny identifikátor technika
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Informácie o technikovi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Technicians'
+        '404':
+          description: Technik neexistuje
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Technicians404'
+components:
+  schemas:
+    Cars:
+      properties:
+        id:
+          type: number
+          example: 1
+        customer_id:
+          type: number
+          example: 1
+        technician_id:
+          type: number
+          example: 1
+        brand:
+          type: string
+          example: BMW
+        model:
+          type: string
+          example: X3
+        year:
+          type: number
+          example: 2011
+        oilChange:
+          type: boolean
+          example: true
+        filterChange:
+          type: boolean
+          example: true
+        tyreChange:
+          type: boolean
+          example: true
+        engineService:
+          type: boolean
+          example: true
+        state:
+          type: string
+          example: not_finished
+        description:
+          type: string
+          example: velmi pokazene
+        image_url:
+          type: string
+          example: obrazok.jpg
+        number_plate:
+          type: string
+          example: TT816DX
+    CarsPost:
+      properties:
+        image_url:
+          example: obrazok.jpg (sem nahrame mimo jsonu obrazok)
+        id:
+          type: number
+          example: 1
+        customer_id:
+          type: number
+          example: 1
+        technician_id:
+          type: number
+          example: 1
+        brand:
+          type: string
+          example: BMW
+        model:
+          type: string
+          example: X3
+        year:
+          type: number
+          example: 2011
+        oilChange:
+          type: boolean
+          example: true
+        filterChange:
+          type: boolean
+          example: true
+        tyreChange:
+          type: boolean
+          example: true
+        engineService:
+          type: boolean
+          example: true
+        state:
+          type: string
+          example: not_finished
+        description:
+          type: string
+          example: velmi pokazene
+        number_plate:
+          type: string
+          example: TT816DX
+    Customers:
+      properties:
+        id:
+          type: number
+          example: 2
+        name:
+          type: string
+          example: misko
+        phoneNumber:
+          type: string
+          example: 9045876541
+        email:
+          type: string
+          example: misko@miskovemail.com
+        password:
+          type: string
+          example: silneheslo1337
+    Technicians:
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: ferko
+        password:
+          type: string
+          example: technik1
+    RepairedCars:
+      properties:
+        id:
+          type: number
+          example: 1
+        customer_id:
+          type: number
+          example: 1
+        technician_id:
+          type: number
+          example: 1
+        brand:
+          type: string
+          example: BMW
+        model:
+          type: string
+          example: X3
+        year:
+          type: number
+          example: 2011
+        oilChange:
+          type: boolean
+          example: true
+        filterChange:
+          type: boolean
+          example: true
+        tyreChange:
+          type: boolean
+          example: true
+        engineService:
+          type: boolean
+          example: true
+        state:
+          type: string
+          example: not_finished
+        description:
+          type: string
+          example: velmi pokazene
+        image_url:
+          type: string
+          example: obrazok.jpg
+        number_plate:
+          type: string
+          example: TT816DX
+        last_service:
+          type: integer
+          example: 22.12.2020
+    RepairedCars201:
+      properties:
+        id:
+          type: number
+          example: 1
+        customer_id:
+          type: number
+          example: 1
+        technician_id:
+          type: number
+          example: 1
+        brand:
+          type: string
+          example: BMW
+        model:
+          type: string
+          example: X5
+        year:
+          type: number
+          example: 2020
+        oilChange:
+          type: boolean
+          example: true
+        filterChange:
+          type: boolean
+          example: true
+        tyreChange:
+          type: boolean
+          example: true
+        engineService:
+          type: boolean
+          example: true
+        state:
+          type: string
+          example: not_finished
+        description:
+          type: string
+          example: opravene
+        image_url:
+          type: string
+          example: obrazok.jpg
+        number_plate:
+          type: string
+          example: TT321DX
+    RepairedCars422:
+      properties:
+        message:
+         type: string
+         example: Zadane parametre boli nespravne.  
+    Cars201:
+      properties:
+        id:
+          type: number
+          example: 1
+        customer_id:
+          type: number
+          example: 1
+        technician_id:
+          type: number
+          example: 1
+        brand:
+          type: string
+          example: BMW
+        model:
+          type: string
+          example: X4
+        year:
+          type: number
+          example: 2020
+        oilChange:
+          type: boolean
+          example: true
+        filterChange:
+          type: boolean
+          example: true
+        tyreChange:
+          type: boolean
+          example: true
+        engineService:
+          type: boolean
+          example: true
+        state:
+          type: string
+          example: not_finished
+        description:
+          type: string
+          example: velmi pokazene
+        image_url:
+          type: string
+          example: obrazok.jpg
+        number_plate:
+          type: string
+          example: TT800DX
+    Cars422:
+      properties:
+        message:
+         type: string
+         example: Zadane parametre boli nespravne.
+    Customers201:
+      properties:
+        id:
+          type: number
+          example: 5
+        name:
+          type: string
+          example: jozko
+        phoneNumber:
+          type: string
+          example: 90458765
+        email:
+          type: string
+          example: jozko@gmail.com
+        password:
+          type: string
+          example: hesielko
+    CustomersID200:
+      properties:
+        id:
+          type: number
+          example: 5
+        name:
+          type: string
+          example: jozko
+        phoneNumber:
+          type: string
+          example: 90458765
+        email:
+          type: string
+          example: jozko@gmail.com
+        password:
+          type: string
+          example: hesielko
+    CustomersID404:
+      properties:
+        message:
+         type: string
+         example: Zakaznik neexistuje.
+    CarsID404:
+      properties:
+        message:
+         type: string
+         example: Vozidlo neexistuje.
+    Technicians404:
+      properties:
+        message:
+         type: string
+         example: Technik neexistuje.
+    CarsDELETE200:
+      properties:
+        message:
+         type: string
+         example: Vozidlo bolo vymazane z databazy.
+    CustomersLogin:
+      properties:
+        name:
+         type: string
+         example: Ferko
+        password:
+         type: string
+         example: hesielko1122.
+    BadDetails:
+      properties:
+        message:
+         type: string
+         example: Zlé prihlasovacie údaje.
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: >-
+      https://virtserver.swaggerhub.com/Serginko/xsoradj_xlanik_APIdokumentacia/1.0.0
