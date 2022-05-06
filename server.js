@@ -10,7 +10,7 @@ const fs = require('fs');
 const cors = require('cors')
 
 
-const websocket = require('ws');
+//const websocket = require('ws');
 
 const databaseUri = process.env.MONGODB_URI
 
@@ -19,9 +19,15 @@ app.use(express.json({limit: '50mb'}));
 app.use(cors())
 //v envcku v tom database uri si treb premenit nazov databazy z MyfirstDatabase na Autoservis
 
-const soket = new websocket.Server({ 
+/*const soket = new websocket.Server({ 
   port: 8082  
-})
+})*/
+
+
+const http = require("http");
+const WebSocket = require("ws");
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
 const Technician = require('./databaseModels/Technicians')
 const Customer = require('./databaseModels/Customer')
@@ -33,7 +39,7 @@ const db = mongoose.connection
 db.on('error', (error) => console.error(error))
 db.once('open', () => console.log('Connected to Database'))
 
-soket.on('connection', ws => {
+wss.on('connection', ws => {
   ws.on('message', async (message) => {
       
       const parsedMessage = JSON.parse(message);
