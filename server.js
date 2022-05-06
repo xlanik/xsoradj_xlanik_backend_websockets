@@ -9,12 +9,19 @@ const upload = multer({ dest: 'uploads/' })
 const fs = require('fs');
 const cors = require('cors')
 
+
+const websocket = require('ws');
+
 const databaseUri = process.env.MONGODB_URI
 
 //app.use(express.json()) //https://stackoverflow.com/questions/18542329/typeerror-cannot-read-property-id-of-undefined
 app.use(express.json({limit: '50mb'}));
 app.use(cors())
 //v envcku v tom database uri si treb premenit nazov databazy z MyfirstDatabase na Autoservis
+
+const soket = new websocket.Server({ 
+  port: 8082  
+})
 
 const Technician = require('./databaseModels/Technicians')
 const Customer = require('./databaseModels/Customer')
@@ -25,6 +32,75 @@ mongoose.connect(databaseUri, { useNewUrlParser: true })
 const db = mongoose.connection
 db.on('error', (error) => console.error(error))
 db.once('open', () => console.log('Connected to Database'))
+
+soket.on('connection', ws => {
+  ws.on('message', async (message) => {
+      
+      const parsedMessage = JSON.parse(message);
+      
+      //console.log(parsedMessage.information);
+      console.log(parsedMessage.data);
+
+      switch(parsedMessage.information){
+
+
+          case "loginCustomer":
+            try{
+              const loginData = JSON.parse(parsedMessage.data);
+              const loginCustomer = await Customer.findOne({ name: loginData.name })
+              if(loginCustomer){
+                if(loginCustomer.password == loginData.password){
+                  ws.send(JSON.stringify({ loginCustomer }));
+                  break;
+                }
+                else{   
+                  ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
+                  break;
+                }
+              }
+              else{
+                const loginTechnician = await Technician.findOne({ name: loginData.name })
+                if(loginTechnician){
+                  if(loginTechnician.password == loginData.password){
+                    ws.send(JSON.stringify({ loginTechnician }));
+                    break;
+                  }
+                else{
+                  ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
+                  break;
+                }
+                }
+              }
+              ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
+              break;
+            }
+            catch(err){
+              ws.send(JSON.stringify({ message: err.message }));
+              break;
+            } 
+
+
+          case "customerCars":
+            const carId = JSON.parse(parsedMessage.data);
+            console.log(carId);
+            let customerCars
+            try {
+              customerCars = await Car.find( { customer_id: carId} )
+              if (customerCars.length == 0) {
+              return ws.send(JSON.stringify({ message: 'Customer has no car in database...' }));
+              }
+              return ws.send(JSON.stringify({ customerCars }));
+
+            } catch (err) {
+              return ws.send(JSON.stringify({ message: err.message }));
+            }
+          
+          default: break;
+      
+      }
+  })
+})
+
 
 //API volania pre technikov
 app.route('/Technicians')
@@ -64,7 +140,7 @@ app.route('/login')
           return
         }
         else{
-          res.status(400).json({ message: "Zle zadane prihlasovacie udaje" })
+          res.status(400).json({ message: "Zle prihlasovacie udaje" })
           return
         }
       }
@@ -155,36 +231,7 @@ app.route('/Cars')
     } catch (err) {
       res.status(400).json({ message: err.message })
     }
-  })/*
-  .post(upload.single('image_url'), async (req, res) => {
-    
-    const parsedData = JSON.parse(req.body.data)
-    console.log(req.file)
-    const encoded = base64_encode(req.file.path)
-
-    const car = new Car({
-      customer_id: parsedData.customer_id,
-      technician_id: parsedData.technician_id,
-      brand: parsedData.brand,
-      model: parsedData.model,
-      year: parsedData.year,
-      oilChange: parsedData.oilChange,
-      filterChange: parsedData.filterChange,
-      tireChange: parsedData.tireChange,
-      engineService: parsedData.engineService,
-      state: parsedData.state,
-      description: parsedData.description,
-      image_url: encoded,
-      number_plate: parsedData.number_plate
-    })
-    try {
-      const newCar = await car.save()
-      res.status(201).json(newCar)
-    } catch (err) {
-      res.status(400).json({ message: err.message })
-    }
   })
-*/
   .post(async (req, res) => {
       
     const parsedData = req.body;
@@ -291,7 +338,7 @@ app.route('/RepairedCars')
 
 
 app.get('/', function(req, res) {
-  res.send('LanSor Autoservis!')
+  res.send('LanSor Autoservis zakladny endpoint funguje!')
 });
 
 
