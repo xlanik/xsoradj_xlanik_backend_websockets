@@ -8,16 +8,14 @@ const upload = multer({ dest: 'uploads/' })
 const fs = require('fs');
 const cors = require('cors')
 const app = express()
-.use(cors)
-.use(express.json())
-.listen(process.env.PORT || port, () => console.log(`Listening on ${PORT}`))
 //const websocket = require('ws');
 
 const databaseUri = process.env.MONGODB_URI
 
-//app.use(express.json()) //https://stackoverflow.com/questions/18542329/typeerror-cannot-read-property-id-of-undefined
-//app.use(express.json({limit: '50mb'}));
-//app.use(cors())
+app.use(express.json()) //https://stackoverflow.com/questions/18542329/typeerror-cannot-read-property-id-of-undefined
+app.use(express.json({limit: '50mb'}));
+app.use(cors())
+app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
 
 
 
@@ -32,7 +30,8 @@ const databaseUri = process.env.MONGODB_URI
 const http = require("http");
 const WebSocket = require("ws");
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+//const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({  port: 8082 });
 
 const Technician = require('./databaseModels/Technicians')
 const Customer = require('./databaseModels/Customer')
@@ -136,10 +135,10 @@ app.route('/Technicians')
     }
   })
   
-  app.route('/Technicians/:id')
-  .get(getOneTechnician, async (req, res) => {
-    res.status(200).json(res.technician)
-  })
+app.route('/Technicians/:id')
+.get(getOneTechnician, async (req, res) => {
+  res.status(200).json(res.technician)
+})
 
 app.route('/login')
   .post(async (req, res) => {
