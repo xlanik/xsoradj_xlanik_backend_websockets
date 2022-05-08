@@ -43,74 +43,6 @@ const db = mongoose.connection
 db.on('error', (error) => console.error(error))
 db.once('open', () => console.log('Connected to Database'))
 
-app.ws('/', function(ws, req) {
-  ws.on('message', async (message) => {
-
-      const parsedMessage = JSON.parse(message);
-      
-      //console.log(parsedMessage.information);
-      console.log(parsedMessage.data);
-
-      switch(parsedMessage.information){
-
-
-          case "loginCustomer":
-            try{
-              const loginData = JSON.parse(parsedMessage.data);
-              const loginCustomer = await Customer.findOne({ name: loginData.name })
-              if(loginCustomer){
-                if(loginCustomer.password == loginData.password){
-                  ws.send(JSON.stringify({ loginCustomer }));
-                  break;
-                }
-                else{   
-                  ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
-                  break;
-                }
-              }
-              else{
-                const loginTechnician = await Technician.findOne({ name: loginData.name })
-                if(loginTechnician){
-                  if(loginTechnician.password == loginData.password){
-                    ws.send(JSON.stringify({ loginTechnician }));
-                    break;
-                  }
-                else{
-                  ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
-                  break;
-                }
-                }
-              }
-              ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
-              break;
-            }
-            catch(err){
-              ws.send(JSON.stringify({ message: err.message }));
-              break;
-            } 
-
-
-          case "customerCars":
-            const carId = JSON.parse(parsedMessage.data);
-            console.log(carId);
-            let customerCars
-            try {
-              customerCars = await Car.find( { customer_id: carId} )
-              if (customerCars.length == 0) {
-              return ws.send(JSON.stringify({ message: 'Customer has no car in database...' }));
-              }
-              return ws.send(JSON.stringify({ customerCars }));
-
-            } catch (err) {
-              return ws.send(JSON.stringify({ message: err.message }));
-            }
-          
-          default: break;
-      
-      }
-  })
-})
-
 
 //API volania pre technikov
 app.route('/Technicians')
@@ -351,6 +283,73 @@ app.get('/', function(req, res) {
   res.send('LanSor Autoservis zakladny endpoint funguje!')
 });
 
+app.ws('/', function(ws, req) {
+  ws.on('message', async (message) => {
+
+      const parsedMessage = JSON.parse(message);
+      
+      //console.log(parsedMessage.information);
+      console.log(parsedMessage.data);
+
+      switch(parsedMessage.information){
+
+
+          case "loginCustomer":
+            try{
+              const loginData = JSON.parse(parsedMessage.data);
+              const loginCustomer = await Customer.findOne({ name: loginData.name })
+              if(loginCustomer){
+                if(loginCustomer.password == loginData.password){
+                  ws.send(JSON.stringify({ loginCustomer }));
+                  break;
+                }
+                else{   
+                  ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
+                  break;
+                }
+              }
+              else{
+                const loginTechnician = await Technician.findOne({ name: loginData.name })
+                if(loginTechnician){
+                  if(loginTechnician.password == loginData.password){
+                    ws.send(JSON.stringify({ loginTechnician }));
+                    break;
+                  }
+                else{
+                  ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
+                  break;
+                }
+                }
+              }
+              ws.send(JSON.stringify({ message: "Zle prihlasovacie udaje" }));
+              break;
+            }
+            catch(err){
+              ws.send(JSON.stringify({ message: err.message }));
+              break;
+            } 
+
+
+          case "customerCars":
+            const carId = JSON.parse(parsedMessage.data);
+            console.log(carId);
+            let customerCars
+            try {
+              customerCars = await Car.find( { customer_id: carId} )
+              if (customerCars.length == 0) {
+              return ws.send(JSON.stringify({ message: 'Customer has no car in database...' }));
+              }
+              return ws.send(JSON.stringify({ customerCars }));
+
+            } catch (err) {
+              return ws.send(JSON.stringify({ message: err.message }));
+            }
+          
+          default: break;
+      
+      }
+  })
+})
 
 app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
 
