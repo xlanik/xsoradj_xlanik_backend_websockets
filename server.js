@@ -17,7 +17,7 @@ const databaseUri = process.env.MONGODB_URI
 app.use(express.json()) //https://stackoverflow.com/questions/18542329/typeerror-cannot-read-property-id-of-undefined
 app.use(express.json({limit: '50mb'}));
 app.use(cors())
-app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
+
 
 
 //v envcku v tom database uri si treb premenit nazov databazy z MyfirstDatabase na Autoservis
@@ -31,7 +31,7 @@ const http = require("http");
 const WebSocket = require("ws");
 const server = http.createServer(app);
 //const wss = new WebSocket.Server({ server });
-const wss = new WebSocket.Server({  port: 8082 });
+const wss = new WebSocket.Server({  server });
 
 const Technician = require('./databaseModels/Technicians')
 const Customer = require('./databaseModels/Customer')
@@ -45,7 +45,7 @@ db.once('open', () => console.log('Connected to Database'))
 
 app.ws('/', function(ws, req) {
   ws.on('message', async (message) => {
-      
+
       const parsedMessage = JSON.parse(message);
       
       //console.log(parsedMessage.information);
@@ -352,6 +352,8 @@ app.get('/', function(req, res) {
 });
 
 
+app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
+
 //middleware funkcia pouzita z linku. Ziskame si vzdy konkretny objekt alebo objekty
 //https://github.com/WebDevSimplified/Your-First-Node-REST-API/blob/master/routes/subscribers.js
 async function getOneCustomer(req, res, next) {
@@ -428,3 +430,5 @@ async function getCustomersCar(req, res, next) {
   res.customerCar = customerCar
   next()
 }
+
+
