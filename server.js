@@ -9,6 +9,8 @@ const fs = require('fs');
 const cors = require('cors')
 const app = express()
 //const websocket = require('ws');
+var expressWs = require('express-ws')(app);
+
 
 const databaseUri = process.env.MONGODB_URI
 
@@ -16,8 +18,6 @@ app.use(express.json()) //https://stackoverflow.com/questions/18542329/typeerror
 app.use(express.json({limit: '50mb'}));
 app.use(cors())
 app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
-
-
 
 
 //v envcku v tom database uri si treb premenit nazov databazy z MyfirstDatabase na Autoservis
@@ -43,7 +43,7 @@ const db = mongoose.connection
 db.on('error', (error) => console.error(error))
 db.once('open', () => console.log('Connected to Database'))
 
-wss.on('connection', ws => {
+app.ws('/', function(ws, req) {
   ws.on('message', async (message) => {
       
       const parsedMessage = JSON.parse(message);

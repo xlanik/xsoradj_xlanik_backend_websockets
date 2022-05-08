@@ -13,13 +13,14 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "express-ws": "^5.0.2",
     "mongodb": "^4.4.1",
     "mongoose": "^6.2.8",
     "multer": "^1.4.4",
     "ws": "^8.6.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.16"
   },
   "repository": {
     "type": "git",
