@@ -36,7 +36,8 @@ const wss = new WebSocket.Server({  server });
 const Technician = require('./databaseModels/Technicians')
 const Customer = require('./databaseModels/Customer')
 const Car = require('./databaseModels/Cars')
-const RepairedCar = require('./databaseModels/RepairedCars')
+const RepairedCar = require('./databaseModels/RepairedCars');
+const { parse } = require('path');
 
 mongoose.connect(databaseUri, { useNewUrlParser: true })
 const db = mongoose.connection
@@ -106,13 +107,203 @@ app.ws('/', function(ws, req) {
               return ws.send(JSON.stringify({ message: err.message }));
             }
           
+          case "Technicians":
+            if(parsedMessage.method == "GET"){
+              try {
+                const technicians = await Technician.find()
+                return ws.send(JSON.stringify({ technicians }));
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }));
+              }
+            }
+
+            else if(parsedMessage.method == "POST"){
+              const information = JSON.parse(parsedMessage.data);
+              const technician = new Technician({
+                name: information.name,
+                password: information.password
+              })
+              try {
+                const newTechnician = await technician.save()
+                return ws.send(JSON.stringify({ newTechnician }));
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }));
+              }
+            }
+          
+          case "TechniciansID":
+            const technicians = await getOneTechnician();
+            return ws.send(JSON.stringify({ technicians }));
+          
+          case "Customers":
+            if (parsedMessage.method == "GET"){
+              try {
+                const customers = await Customer.find()
+                return ws.send(JSON.stringify({ customers }))
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }));
+              }
+            }
+            else if(parsedMessage.method == "POST"){
+              const information = JSON.parse(parsedMessage.data);
+              const customer = new Customer({
+                name: information.name,
+                phoneNumber: information.phoneNumber,
+                email: information.email,
+                password: information.password
+              })
+              try {
+          
+                const usedName = await Customer.findOne({ name: information.name })
+                const usedPhoneNumber = await Customer.findOne({ phoneNumber: information.phoneNumber })
+                const usedEmail = await Customer.findOne({ email: information.email })
+          
+                if(usedName)  return ws.send(JSON.stringify({ message: "Uzivatel s tymto menom uz je zaregistrovany" }))
+                else if(usedPhoneNumber)  return ws.send(JSON.stringify({ message: "Uzivatel s tymto telefonnym cislom uz je zaregistrovany" }))
+                else if(usedEmail)  return ws.send(JSON.stringify({ message: "Uzivatel s tymto emailom uz je zaregistrovany" }))
+          
+                if(!usedName && !usedPhoneNumber && !usedEmail){
+                  const newCustomer = await customer.save()
+                  return ws.send(JSON.stringify({ newCustomer }))
+                }
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message  }))
+              }
+            }
+
+          case "CustomersID":
+            const customer = await getOneCustomer();
+            if (parsedMessage.method == "GET"){
+              return ws.send(JSON.stringify({ customer }));
+          
+            }
+            else if (parsedMessage.method == "DELETE"){
+              try {
+                await customer.remove()
+                return ws.send(JSON.stringify({ message: 'Customer was deleted from DB...' }))
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message  }))
+              }
+            }
+
+          case "Cars":
+            if(parsedMessage.method == "GET"){
+              try {
+                const cars = await Car.find()
+                return ws.send(JSON.stringify({ cars }))
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }))
+              }
+            }
+            else if(parsedMessage.method == "POST"){
+              const parsedData = JSON.parse(parsedMessage.data);
+
+              const car = new Car({
+                customer_id: parsedData.customer_id,
+                technician_id: parsedData.technician_id,
+                brand: parsedData.brand,
+                model: parsedData.model,
+                year: parsedData.year,
+                oilChange: parsedData.oilChange,
+                filterChange: parsedData.filterChange,
+                tireChange: parsedData.tireChange,
+                engineService: parsedData.engineService,
+                state: parsedData.state,
+                description: parsedData.description,
+                image_url: parsedData.image_url,
+                number_plate: parsedData.number_plate
+              })
+              try {
+                const newCar = await car.save()
+                return ws.send(JSON.stringify({ newCar }))
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }))
+              }
+            }
+          
+          case "CarsID":
+            const car = await getOneCar();
+            if (parsedMessage.method == "GET"){
+              return ws.send(JSON.stringify({ car }));
+          
+            }
+            else if(parsedMessage.method == "DELETE"){
+              try {
+                await car.remove()
+                return ws.send(JSON.stringify({ message: 'Car was deleted from DB...' }))
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }))
+              }
+            }
+            else if(parsedMessage.method == "PATCH"){
+              const parsedData = JSON.parse(parsedMessage.data);
+
+              car.oilChange = false
+              car.filterChange = false
+              car.tireChange = false
+              car.engineService = false
+              car.state = parsedData.state  //opravene
+              car.last_service = new Date()
+              car.description = parsedData.description    //z requeste poznamky technika. Potom sa to obvai v jednom poli v historii
+              
+
+              try {
+                const updatedCar = await car.save()
+                return ws.send(JSON.stringify({ updatedCar }))
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }))
+              }
+            }
+
+          case "TechniciansCarsID":
+            const techniciansCars = await getTechniciansCars();
+            return ws.send(JSON.stringify({ techniciansCars }));
+          
+          case "CustomersCarsID":
+            const customerCarsID = await getCustomersCar();
+            return ws.send(JSON.stringify({ customerCarsID }));
+
+          case "RepairedCars":
+            if(parsedMessage.method == "GET"){
+              try {
+                const repairedCars = await RepairedCar.find()
+                return ws.send(JSON.stringify({ repairedCars }));
+              } catch (err) {
+                return ws.send(JSON.stringify({  message: err.message }));
+              }
+            }
+            else if(parsedMessage.method == "POST"){
+              const parsedData = JSON.parse(parsedMessage.data);
+              const repairedCar = new RepairedCar({
+                customer_id: parsedData.customer_id,
+                technician_id: parsedData.technician_id,
+                brand: parsedData.brand,
+                model: parsedData.model,
+                year: parsedData.year,
+                oilChange: parsedData.oilChange,
+                filterChange: parsedData.filterChange,
+                tireChange: parsedData.tireChange,
+                engineService: parsedData.engineService,
+                state: parsedData.state,
+                description: parsedData.description,
+                image_url: parsedData.image_url,
+                number_plate: parsedData.number_plate,
+                last_service: parsedData.last_service
+              })
+              try {
+                const NewRepairedCar = await repairedCar.save()
+                return ws.send(JSON.stringify({ NewRepairedCar }))
+              } catch (err) {
+                return ws.send(JSON.stringify({ message: err.message }))
+              }
+            }
           default: break;
       
       }
   })
 })
 
-
+/*
 //API volania pre technikov
 app.route('/Technicians')
   .get(async (req, res) => {
@@ -310,7 +501,7 @@ app.route('/Cars/:id')
   .get(getCustomersCar, async (req, res) => {
     res.status(200).json(res.customerCar)
   })
-
+*/
 //API volania pre auta, ktore su opravene
 app.route('/RepairedCars')
   .get(async (req, res) => {
