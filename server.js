@@ -132,8 +132,18 @@ app.ws('/', function(ws, req) {
             }
           
           case "TechniciansID":
-            const technicians = await getOneTechnician();
-            return ws.send(JSON.stringify({ technicians }));
+            const techid = JSON.parse(parsedMessage.data);
+            let technician
+            try {
+              technician = await Technician.findById(techid.id)
+              if (technician == null) {
+                return ws.send(JSON.stringify({ message: 'Technician is not in the DB' }))
+              }
+              else return ws.send(JSON.stringify({ technician}));
+            } catch (err) {
+              return ws.send(JSON.stringify({ message: err.message }))
+            }
+            
           
           case "Customers":
             if (parsedMessage.method == "GET"){
@@ -172,10 +182,19 @@ app.ws('/', function(ws, req) {
             }
 
           case "CustomersID":
-            const customer = await getOneCustomer();
+            let customer
+            const custid = JSON.parse(parsedMessage.data);
+            try {
+              customer = await Customer.findById(custid.id)
+              if (customer == null) {
+                return ws.send(JSON.stringify({ message: 'Customer is not in the DB' }))
+              }
+            } catch (err) {
+              return ws.send(JSON.stringify({ message: err.message }))
+            }
+
             if (parsedMessage.method == "GET"){
               return ws.send(JSON.stringify({ customer }));
-          
             }
             else if (parsedMessage.method == "DELETE"){
               try {
@@ -222,10 +241,19 @@ app.ws('/', function(ws, req) {
             }
           
           case "CarsID":
-            const car = await getOneCar();
+            const carid = JSON.parse(parsedMessage.data);
+            let car;
+            try {
+              car = await Car.findById(carid.id)
+              if (car == null) {
+                return ws.send(JSON.stringify({ message: 'Car is not in the DB' }))
+              }
+            } catch (err) {
+              return ws.send(JSON.stringify({ message: err.message }))
+            }
+
             if (parsedMessage.method == "GET"){
               return ws.send(JSON.stringify({ car }));
-          
             }
             else if(parsedMessage.method == "DELETE"){
               try {
@@ -256,12 +284,32 @@ app.ws('/', function(ws, req) {
             }
 
           case "TechniciansCarsID":
-            const techniciansCars = await getTechniciansCars();
-            return ws.send(JSON.stringify({ techniciansCars }));
+            const technicianid = JSON.parse(parsedMessage.data);
+            let technicianCars
+            try {
+              technicianCars = await Car.find( { technician_id: technicianid.id} )
+              if (technicianCars.length == 0) {
+                return ws.send(JSON.stringify({ message: 'Technician has no assigned cars...' }))
+              }
+              else return ws.send(JSON.stringify({ technicianCars }));            
+            } catch (err) {
+              return ws.send(JSON.stringify({ message: err.message }))
+            }
+            
           
           case "CustomersCarsID":
-            const customerCarsID = await getCustomersCar();
-            return ws.send(JSON.stringify({ customerCarsID }));
+            const customerid = JSON.parse(parsedMessage.data);
+            let customerCar
+            try {
+              customerCar = await Car.find( { customer_id: customerid.id} )
+              if (customerCar.length == 0) {
+                return ws.send(JSON.stringify({ message: 'Customer has no car in database...' }));
+              }
+              else  return ws.send(JSON.stringify({ customerCar }));
+            } catch (err) {
+              return ws.send(JSON.stringify({  message: err.message }));
+            }
+            
 
           case "RepairedCars":
             if(parsedMessage.method == "GET"){
@@ -501,7 +549,7 @@ app.route('/Cars/:id')
   .get(getCustomersCar, async (req, res) => {
     res.status(200).json(res.customerCar)
   })
-*/
+
 //API volania pre auta, ktore su opravene
 app.route('/RepairedCars')
   .get(async (req, res) => {
@@ -536,7 +584,7 @@ app.route('/RepairedCars')
       res.status(400).json({ message: err.message })
     }
   })
-
+*/
 
 
 app.get('/', function(req, res) {
