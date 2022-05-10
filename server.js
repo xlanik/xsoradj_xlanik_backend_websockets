@@ -361,9 +361,6 @@ app.ws('/', function(ws, req) {
   })
 })
 
-<<<<<<< HEAD
-
-=======
 app.get('/', function(req, res) {
   res.send('LanSor Autoservis zakladny endpoint funguje!')
 });
@@ -372,7 +369,6 @@ app.get('/', function(req, res) {
 app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
 
 /*
->>>>>>> 5e121681f608df57f25404a0c4c1c3d6eb361bbc
 //API volania pre technikov
 app.route('/Technicians')
   .get(async (req, res) => {
