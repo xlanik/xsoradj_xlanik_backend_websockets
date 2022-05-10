@@ -361,7 +361,18 @@ app.ws('/', function(ws, req) {
   })
 })
 
+<<<<<<< HEAD
 
+=======
+app.get('/', function(req, res) {
+  res.send('LanSor Autoservis zakladny endpoint funguje!')
+});
+
+
+app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
+
+/*
+>>>>>>> 5e121681f608df57f25404a0c4c1c3d6eb361bbc
 //API volania pre technikov
 app.route('/Technicians')
   .get(async (req, res) => {
@@ -594,15 +605,19 @@ app.route('/RepairedCars')
       res.status(400).json({ message: err.message })
     }
   })
+<<<<<<< HEAD
 
 
 app.get('/', function(req, res) {
   res.send('LanSor Autoservis zakladny endpoint funguje!')
 });
+=======
+>>>>>>> 5e121681f608df57f25404a0c4c1c3d6eb361bbc
+
+*/
 
 
-app.listen(process.env.PORT || port, () => console.log(`Listening on ${port}`))
-
+/*
 //middleware funkcia pouzita z linku. Ziskame si vzdy konkretny objekt alebo objekty
 //https://github.com/WebDevSimplified/Your-First-Node-REST-API/blob/master/routes/subscribers.js
 async function getOneCustomer(req, res, next) {
@@ -679,5 +694,4 @@ async function getCustomersCar(req, res, next) {
   res.customerCar = customerCar
   next()
 }
-
-
+*/
