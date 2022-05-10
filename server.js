@@ -287,13 +287,13 @@ app.ws('/', function(ws, req) {
             const technicianid = JSON.parse(parsedMessage.data);
             let technicianCars
             try {
-              technicianCars = await Car.find( { technician_id: technicianid._id} )
+              technicianCars = await Car.find( { technician_id: technicianid} )
               if (technicianCars.length == 0) {
                 return ws.send(JSON.stringify({ message: 'Technician has no assigned cars...' }))
               }
               else return ws.send(JSON.stringify({ 
                 information: 'orders',
-                data: JSON.stringify(userCredentials)
+                data: JSON.stringify(technicianCars)
               }));
               
                        
