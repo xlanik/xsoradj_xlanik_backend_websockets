@@ -31,7 +31,7 @@ const http = require("http");
 const WebSocket = require("ws");
 const server = http.createServer(app);
 //const wss = new WebSocket.Server({ server });
-const wss = new WebSocket.Server({  server });
+//const wss = new WebSocket.Server({  port: 8082 });
 
 const Technician = require('./databaseModels/Technicians')
 const Customer = require('./databaseModels/Customer')
@@ -287,11 +287,16 @@ app.ws('/', function(ws, req) {
             const technicianid = JSON.parse(parsedMessage.data);
             let technicianCars
             try {
-              technicianCars = await Car.find( { technician_id: technicianid.id} )
+              technicianCars = await Car.find( { technician_id: technicianid._id} )
               if (technicianCars.length == 0) {
                 return ws.send(JSON.stringify({ message: 'Technician has no assigned cars...' }))
               }
-              else return ws.send(JSON.stringify({ technicianCars }));            
+              else return ws.send(JSON.stringify({ 
+                information: 'orders',
+                data: JSON.stringify(userCredentials)
+              }));
+              
+                       
             } catch (err) {
               return ws.send(JSON.stringify({ message: err.message }))
             }
@@ -315,7 +320,12 @@ app.ws('/', function(ws, req) {
             if(parsedMessage.method == "GET"){
               try {
                 const repairedCars = await RepairedCar.find()
-                return ws.send(JSON.stringify({ repairedCars }));
+                return ws.send(JSON.stringify({ 
+                  information: 'history',
+                  data: JSON.stringify(repairedCars)
+                }));
+                
+                //ws.send(JSON.stringify({ repairedCars }));
               } catch (err) {
                 return ws.send(JSON.stringify({  message: err.message }));
               }
@@ -351,7 +361,7 @@ app.ws('/', function(ws, req) {
   })
 })
 
-/*
+
 //API volania pre technikov
 app.route('/Technicians')
   .get(async (req, res) => {
@@ -584,7 +594,6 @@ app.route('/RepairedCars')
       res.status(400).json({ message: err.message })
     }
   })
-*/
 
 
 app.get('/', function(req, res) {
