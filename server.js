@@ -244,7 +244,7 @@ app.ws('/', function(ws, req) {
             const carid = JSON.parse(parsedMessage.data);
             let car;
             try {
-              car = await Car.findById(carid)
+              car = await Car.findById(carid.id)
               if (car == null) {
                 return ws.send(JSON.stringify({ message: 'Car is not in the DB' }))
               }
