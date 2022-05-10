@@ -289,7 +289,11 @@ app.ws('/', function(ws, req) {
             try {
               technicianCars = await Car.find( { technician_id: technicianid} )
               if (technicianCars.length == 0) {
-                return ws.send(JSON.stringify({ message: 'Technician has no assigned cars...' }))
+                //return ws.send(JSON.stringify({ message: 'Technician has no assigned cars...' }))
+                return ws.send(JSON.stringify({ 
+                  information: 'orders',
+                  message: 'Technician has no assigned cars...'
+                }));
               }
               else return ws.send(JSON.stringify({ 
                 information: 'orders',
@@ -298,7 +302,10 @@ app.ws('/', function(ws, req) {
               
                        
             } catch (err) {
-              return ws.send(JSON.stringify({ message: err.message }))
+              return ws.send(JSON.stringify({ 
+                information: 'orders',
+                message: 'Technician has no assigned cars...'
+              }));
             }
             
           
@@ -320,6 +327,13 @@ app.ws('/', function(ws, req) {
             if(parsedMessage.method == "GET"){
               try {
                 const repairedCars = await RepairedCar.find()
+                if (repairedCars.length == 0) {
+                  //return ws.send(JSON.stringify({ message: 'Technician has no assigned cars...' }))
+                  return ws.send(JSON.stringify({ 
+                    information: 'history',
+                    message: 'No repaired cars in history'
+                  }));
+                }
                 return ws.send(JSON.stringify({ 
                   information: 'history',
                   data: JSON.stringify(repairedCars)
@@ -327,7 +341,10 @@ app.ws('/', function(ws, req) {
                 
                 //ws.send(JSON.stringify({ repairedCars }));
               } catch (err) {
-                return ws.send(JSON.stringify({  message: err.message }));
+                return ws.send(JSON.stringify({ 
+                  information: 'history',
+                  message: err.message
+                }));
               }
             }
             else if(parsedMessage.method == "POST"){
