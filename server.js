@@ -293,7 +293,7 @@ app.ws('/', function(ws, req) {
               }
               else return ws.send(JSON.stringify({ 
                 information: 'orders',
-                data: JSON.stringify(technicianCars)
+                data: JSON.stringify({technicianCars})
               }));
               
                        
